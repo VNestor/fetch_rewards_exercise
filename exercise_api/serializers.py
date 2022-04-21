@@ -14,3 +14,9 @@ class TransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
         fields = ('id', 'payer', 'points', 'timestamp')
+
+
+class AddTransactionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Transaction
+        fields = ('payer', 'points', 'timestamp')
