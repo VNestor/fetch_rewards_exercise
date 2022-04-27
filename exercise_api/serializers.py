@@ -1,22 +1,30 @@
 from rest_framework import serializers
-from .models import User, Transaction
+from .models import Points, Transactions
 
 # A serializer takes our models and the python code and translates into a JSON response.
 
 
-class UserSerializer(serializers.ModelSerializer):
+class PointsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
-        fields = ('id', 'name', 'points')
+        model = Points
+        fields = ('id', 'payer', 'points')
 
 
-class TransactionSerializer(serializers.ModelSerializer):
+class TransactionsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Transaction
+        model = Transactions
         fields = ('id', 'payer', 'points', 'timestamp')
+
+# We create a serializer for POST requests to ensure data sent to POST request is valid.
 
 
 class AddTransactionSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Transaction
+        model = Transactions
         fields = ('payer', 'points', 'timestamp')
+
+
+class SpendPointsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Points
+        fields = ('points',)
