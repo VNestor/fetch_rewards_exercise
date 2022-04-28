@@ -45,10 +45,10 @@ Once installed on your local machine, in a terminal shell navigate into the repo
     cd fetch_rewards_exercise
 ```
 
-- Run the following commands to ensure Django is executed corretly:
+- Run the following commands to ensure Django is executed correctly:
 
 ```
-    python manage.py makemigrations execise_api
+    python manage.py makemigrations exercise_api
 ```
 
 ```

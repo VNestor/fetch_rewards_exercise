@@ -1,5 +1,8 @@
 from django.test import TestCase
-from rest_framework.test import APIRequestFactory
+from rest_framework.test import APIRequestFactory, APITestCase
+from django.urls import include, path, reverse
+from rest_framework import status
+from .models import Points, Transactions
 
 # Create your tests here.
 # ref: https://www.django-rest-framework.org/api-guide/testing/
@@ -27,3 +30,33 @@ fourth_post_request = factory.post(
     '/add-transaction', fourth_call, format='json')
 fifth_post_request = factory.post(
     '/add-transaction', fifth_call, format='json')
+
+
+class PointsTest(APITestCase):
+    urlpatterns = [
+        path('/', include('exercise_api.urls')),
+    ]
+
+    def test_points_route(self):
+        """
+        Ensure we can call Points route
+        """
+        url = reverse('points')
+        response = self.client.get(url)
+        self.assertEqual(json.loads(response.content), [
+            {
+                "id": 1,
+                "payer": "DANNON",
+                "points": 1100
+            },
+            {
+                "id": 2,
+                "payer": "UNILEVER",
+                "points": 200
+            },
+            {
+                "id": 3,
+                "payer": "MILLER COORS",
+                "points": 10000
+            }
+        ])
