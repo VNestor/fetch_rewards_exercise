@@ -99,7 +99,7 @@ Once installed on your local machine, in a terminal shell navigate into the repo
 **Points**
 
 ```
-    fields:
+fields:
     {
         id:Integer,
         payer: String,
@@ -114,7 +114,7 @@ GET:
 **Transactions**
 
 ```
-    fields:
+fields:
     {
         id:Integer,
         payer: String,
@@ -130,7 +130,7 @@ GET:
 **Add Transactions**
 
 ```
-    fields:
+fields:
     {
         payer: String,
         points: Integer,
@@ -147,7 +147,7 @@ POST:
 ```
     fields:
     {
-        points: Integer,
+        points: Integer
     }
 ```
 
