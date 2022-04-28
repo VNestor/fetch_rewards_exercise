@@ -28,9 +28,3 @@ class SpendPointsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Points
         fields = ('points',)
-
-
-class ToJSONSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Transactions
-        fields = ('payer', 'points')

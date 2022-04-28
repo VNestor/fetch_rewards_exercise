@@ -1,7 +1,8 @@
+from ctypes import pointer
 from django.shortcuts import render
 from rest_framework import generics, status
 from .models import Points, Transactions
-from .serializers import PointsSerializer, TransactionsSerializer, AddTransactionSerializer, SpendPointsSerializer, ToJSONSerializer
+from .serializers import PointsSerializer, TransactionsSerializer, AddTransactionSerializer, SpendPointsSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.db.models import Sum
@@ -9,12 +10,15 @@ import datetime
 from collections import defaultdict
 import json
 from django.http import JsonResponse
+import copy
 
 # Create your views here.
 # This is where we will have our endpoints
-# / add transactions
-# / spend points
-# I also want to be able to get all Points Balances, and transactions
+# POST /add transaction
+# POST /spend-points
+# GET /transactions
+# GET /points
+
 
 # Helper function to help determine if key exist in nested dictionart
 # ref: https://stackoverflow.com/a/43491315
@@ -68,48 +72,36 @@ def spend_points(points):
         else:
             EOD_balances[timestamp][payer] += balance
 
-        print(f"(EOD_BALANCES: {EOD_balances}")
-
     # Iterate through Points objects and store data to current balances
     for balance_idx, obj in enumerate(balances.iterator()):
         balance = balances[balance_idx]
         name = balance.payer
         points_at_idx = balance.points
         current_balances[name] = points_at_idx
-        print(f"current balance: {current_balances}")
 
-        # balance.save(update_fields=['points'])
-        # transaction = Transactions(
-        #     payer=payer, points=(points*-1), timestamp=datetime.datetime.now().replace(microsecond=0).isoformat())
-        # transaction.save()
-    # track_data = {"payer": [], "points": []}
-    track_data = defaultdict(dict)
+    # Create of copy of current balances to keep update of balances after removing points
+    updated_balances = copy.deepcopy(current_balances)
 
     # Iterate through dictionaries and determine how to spend points
     for date, users in EOD_balances.items():
         for name, current_points in current_balances.items():
+            # check if name exists in EOD_balances, and check if payer has enough points, and points is still > 0
             if name in EOD_balances[date] and current_points > 0 and users[name] > 0 and points > 0:
                 if points - users[name] <= 0:
-                    # track_data['payer'].append(name)
-                    # track_data['points'].append(points)
-                    track_data[name] = (points * -1)
-                    points -= points
-                    print(f"track data: {track_data}")
-                    print(users[name])
-                    print(points)
-                else:
-                    # track_data['payer'].append(name)
-                    # track_data['points'].append(users[name])
-                    track_data[name] = (users[name] * -1)
-                    points -= users[name]
-                    print(f"track data: {track_data}")
-                    print(users[name])
-                    print(points)
 
-    to_json = json.dumps([{"payer": payer, "points": points}
-                          for payer, points in track_data.items()])
-    print(to_json)
-    return to_json
+                    updated_balances[name] += (points * -1)
+                    points -= points
+
+                else:
+                    updated_balances[name] += (users[name] * -1)
+                    points -= users[name]
+
+    # Determine the difference between current and updated balanes to determine points to remove.
+
+    negative_difference = {
+        key: updated_balances[key] - current_balances.get(key) for key in updated_balances if (updated_balances[key] - current_balances.get(key) != 0)}
+
+    return negative_difference
 
 # Returns list of Points balance from Ppoints model
 
@@ -184,11 +176,25 @@ class SpendPointsView(APIView):
                     return Response({'Bad Request': 'Not enough points.'}, status=status.HTTP_400_BAD_REQUEST)
 
                 else:
-                    transaction = spend_points(points)
+                    # Call helper function to determine how to spend points
+                    points_to_spend = spend_points(points)
 
-                    return JsonResponse(transaction, safe=False)
-                # return Response({user.payer}, status=status.HTTP_200_OK)
-                # Return 201 Created reponse when points to spend successfully created.
+                    # Convert dictionary to json
+                    to_json = json.dumps([{"payer": payer, "points": (points)}
+                                          for payer, points in points_to_spend.items()])
+
+                    # Using data from helper function, udpate data accordingly
+                    for name, spending_points in points_to_spend.items():
+                        queryset = Points.objects.filter(payer=name)
+                        user = queryset[0]
+                        user.points += (spending_points)
+                        user.save(update_fields=['points'])
+                        # We create a new transaction for each time we update points
+                        transaction = Transactions(payer=name, points=(spending_points), timestamp=datetime.datetime.now(
+                        ).replace(microsecond=0).isoformat())
+                        transaction.save()
+
+                    return Response({to_json}, status=status.HTTP_201_CREATED)
 
             else:
 
