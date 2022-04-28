@@ -159,52 +159,52 @@ POST:
 
 #### GET All Points
 
-    ```
-        import requests
+```
+    import requests
 
-        BASE_URL = 'http://127.0.0.1:8000'
+    BASE_URL = 'http://127.0.0.1:8000'
 
-        get_response = requests.get(f"{BASE_URL}/points")
+    get_response = requests.get(f"{BASE_URL}/points")
 
-        print(get_reponse.json())
-    ```
+    print(get_reponse.json())
+```
 
 #### GET All Transactions
 
-    ```
-        import requests
+```
+    import requests
 
-        BASE_URL = 'http://127.0.0.1:8000'
+    BASE_URL = 'http://127.0.0.1:8000'
 
-        get_response = requests.get(f"{BASE_URL}/transactions")
+    get_response = requests.get(f"{BASE_URL}/transactions")
 
-        print(get_reponse.json())
-    ```
+    print(get_reponse.json())
+```
 
 #### POST Transaction
 
-    ```
-        import requests
+```
+    import requests
 
-        BASE_URL = 'http://127.0.0.1:8000'
+    BASE_URL = 'http://127.0.0.1:8000'
 
-        new_transaction = { "payer": "DANNON", "points": 1000, "timestamp": "2020-11-02T14:00:00Z" }
+    new_transaction = { "payer": "DANNON", "points": 1000, "timestamp": "2020-11-02T14:00:00Z" }
 
-        post_response = requests.post(f"{BASE_URL}/spend-points", json=points_to_spend)
+    post_response = requests.post(f"{BASE_URL}/spend-points", json=points_to_spend)
 
-        print(get_reponse.json())
-    ```
+    print(get_reponse.json())
+```
 
 #### POST Spend
 
-    ```
-        import requests
+```
+    import requests
 
-        BASE_URL = 'http://127.0.0.1:8000'
+    BASE_URL = 'http://127.0.0.1:8000'
 
-        new_transaction = { "payer": "DANNON", "points": 1000, "timestamp": "2020-11-02T14:00:00Z" }
+    new_transaction = { "payer": "DANNON", "points": 1000, "timestamp": "2020-11-02T14:00:00Z" }
 
-        post_response = requests.post(f"{BASE_URL}/spend-points", json=points_to_spend)
+    post_response = requests.post(f"{BASE_URL}/spend-points", json=points_to_spend)
 
-        print(get_reponse.json())
-    ```
+    print(get_reponse.json())
+```
