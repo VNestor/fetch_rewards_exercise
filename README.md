@@ -3,7 +3,7 @@
 ## Description
 
 My submission for Fetch Rewards' coding exercise.
-This project is a web service that accepts HTTP requests and returns reponses based on the conditions outlined in the Fetch Rewards Coding Exercise.
+This project is a web service that accepts HTTP requests and returns responses based on the conditions outlined in the Fetch Rewards Coding Exercise.
 
 ## Getting Started
 
