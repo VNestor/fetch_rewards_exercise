@@ -3,7 +3,7 @@
 ## Description
 
 My submission for Fetch Rewards' coding exercise.
-This project is a web service that accepts HTTP requests and returns reponses based on the conditions based the conditions outline in the Fetch Rewards Coding Exercise.
+This project is a web service that accepts HTTP requests and returns reponses based on the conditions outlined in the Fetch Rewards Coding Exercise.
 
 ## Getting Started
 
@@ -83,7 +83,7 @@ Once installed on your local machine, in a terminal shell navigate into the repo
 
 - This repository will be initialized with the sample data provided by Fetch Rewards
 - If will have not called the /spend-points route.
-- Calling the /spend-points route will the first time this route is called.
+- Calling the /spend-points route will be the first time this route is called.
 - To delete all the data initialized to store new data, run the following command:
 
 ```
