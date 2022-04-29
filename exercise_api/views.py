@@ -180,7 +180,7 @@ class SpendPointsView(APIView):
                     points_to_spend = spend_points(points)
 
                     # Convert dictionary to json
-                    to_json = json.dumps([{"payer": payer, "points": (points)}
+                    to_json = json.dumps([{'payer': payer, 'points': points}
                                           for payer, points in points_to_spend.items()])
 
                     # Using data from helper function, udpate data accordingly

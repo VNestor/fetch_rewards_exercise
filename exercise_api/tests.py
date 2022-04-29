@@ -1,62 +1,93 @@
 from django.test import TestCase
-from rest_framework.test import APIRequestFactory, APITestCase
-from django.urls import include, path, reverse
+from rest_framework.test import APITestCase
 from rest_framework import status
 from .models import Points, Transactions
+import json
 
 # Create your tests here.
 # ref: https://www.django-rest-framework.org/api-guide/testing/
-factory = APIRequestFactory()
-get_points_request = factory.get('/points')
-get_transactions_request = factory.get('/transaction')
-first_call = {"payer": "DANNON", "points": 1000,
-              "timestamp": "2020-11-02T14:00:00Z"}
-second_call = {"payer": "UNILEVER", "points": 200,
-               "timestamp": "2020-10-31T11:00:00Z"}
-third_call = {"payer": "DANNON", "points": -
-              200, "timestamp": "2020-10-31T15:00:00Z"}
-fourth_call = {"payer": "MILLER COORS", "points": 10000,
-               "timestamp": "2020-11-01T14:00:00Z"}
-fifth_call = {"payer": "DANNON", "points": 300,
-              "timestamp": "2020-10-31T10:00:00Z"}
 
-first_post_request = factory.post(
-    '/add-transaction', first_call, format='json')
-second_post_request = factory.post(
-    '/add-transaction', second_call, format='json')
-third_post_request = factory.post(
-    '/add-transaction', third_call, format='json')
-fourth_post_request = factory.post(
-    '/add-transaction', fourth_call, format='json')
-fifth_post_request = factory.post(
-    '/add-transaction', fifth_call, format='json')
+
+class AddTransactionTest(APITestCase):
+    def test_add_transaction(self):
+        """
+            Ensure we can add transactions
+        """
+        add_transaction_url = '/add-transaction'
+        data = {"payer": "DANNON", "points": 1000,
+                "timestamp": "2020-11-02T14:00:00Z"}
+        add_transaction_response = self.client.post(
+            add_transaction_url, data, format='json')
+        self.assertEqual(add_transaction_response.status_code,
+                         status.HTTP_201_CREATED)
+        self.assertEqual(Points.objects.count(), 1)
+        self.assertEqual(Transactions.objects.count(), 1)
 
 
 class PointsTest(APITestCase):
-    urlpatterns = [
-        path('/', include('exercise_api.urls')),
-    ]
 
     def test_points_route(self):
         """
         Ensure we can call Points route
         """
-        url = reverse('points')
-        response = self.client.get(url)
-        self.assertEqual(json.loads(response.content), [
-            {
-                "id": 1,
-                "payer": "DANNON",
-                "points": 1100
-            },
-            {
-                "id": 2,
-                "payer": "UNILEVER",
-                "points": 200
-            },
-            {
-                "id": 3,
-                "payer": "MILLER COORS",
-                "points": 10000
-            }
-        ])
+        add_transaction_url = '/add-transaction'
+        data = {"payer": "DANNON", "points": 1000,
+                "timestamp": "2020-11-02T14:00:00Z"}
+        add_transaction_response = self.client.post(
+            add_transaction_url, data, format='json')
+        points_url = '/points'
+        response = self.client.get(points_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(Points.objects.count(), 1)
+        self.assertEqual(Transactions.objects.count(), 1)
+        self.assertEqual(json.loads(response.content), ([{
+            "id": 1,
+            "payer": "DANNON",
+            "points": 1000
+        }]
+        ))
+
+
+class TransactionsTest(APITestCase):
+
+    def test_points_route(self):
+        """
+        Ensure we can call Points route
+        """
+        add_transaction_url = '/add-transaction'
+        data = {"payer": "DANNON", "points": 1000,
+                "timestamp": "2020-11-02T14:00:00Z"}
+        add_transaction_response = self.client.post(
+            add_transaction_url, data, format='json')
+        points_url = '/transactions'
+        response = self.client.get(points_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(Points.objects.count(), 1)
+        self.assertEqual(Transactions.objects.count(), 1)
+        self.assertEqual(json.loads(response.content), ([{
+            "id": 1,
+            "payer": "DANNON",
+            "points": 1000,
+            "timestamp": "2020-11-02T14:00:00Z"
+        }]
+        ))
+
+
+class SpendPointsTest(APITestCase):
+
+    def test_points_route(self):
+        """
+        Ensure we can call Points route
+        """
+        add_transaction_url = '/add-transaction'
+        data = {"payer": "DANNON", "points": 1000,
+                "timestamp": "2020-11-02T14:00:00Z"}
+        add_transaction_response = self.client.post(
+            add_transaction_url, data, format='json')
+        spend_points_url = '/spend-points'
+        points_data = {"points": 100}
+        response = self.client.post(
+            spend_points_url, points_data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Points.objects.count(), 1)
+        self.assertEqual(Transactions.objects.count(), 2)
