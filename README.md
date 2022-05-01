@@ -202,7 +202,7 @@ POST:
 
     BASE_URL = 'http://127.0.0.1:8000'
 
-    points_to_spend = { "points": 5000 }
+    points_to_spend = { "points": 100 }
 
     post_response = requests.post(f"{BASE_URL}/spend-points", json=points_to_spend)
 
