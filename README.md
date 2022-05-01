@@ -190,7 +190,7 @@ POST:
 
     new_transaction = { "payer": "DANNON", "points": 1000, "timestamp": "2020-11-02T14:00:00Z" }
 
-    post_response = requests.post(f"{BASE_URL}/spend-points", json=points_to_spend)
+    post_response = requests.post(f"{BASE_URL}/add-transaction", json=new_transaction)
 
     print(get_reponse.json())
 ```
@@ -202,7 +202,7 @@ POST:
 
     BASE_URL = 'http://127.0.0.1:8000'
 
-    new_transaction = { "payer": "DANNON", "points": 1000, "timestamp": "2020-11-02T14:00:00Z" }
+    points_to_spend = { "points": 5000 }
 
     post_response = requests.post(f"{BASE_URL}/spend-points", json=points_to_spend)
 
