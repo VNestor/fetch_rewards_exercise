@@ -125,7 +125,7 @@ fields:
 
 GET:
 
-- /transaction
+- /transactions
 
 **Add Transactions**
 
